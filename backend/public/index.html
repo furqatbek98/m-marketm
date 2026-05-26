@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-market - Onlayn do'kon</title>
+    <style>
+        :root{--primary:#6C2BD9;--primary-dark:#5521B5;--primary-light:#EDE9FE;--danger:#F85149;--success:#2DA44E;--warning:#F59E0B;--star:#FFB800;--bg:#F5F5F5;--white:#FFF;--text:#1F2937;--text-light:#6B7280;--text-lighter:#9CA3AF;--border:#E5E7EB;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);--radius:14px;--radius-sm:10px;--radius-xs:6px;--transition:0.25s ease}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;padding-bottom:80px}
+        .header{background:var(--primary);color:#fff;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(108,43,217,.3)}
+        .header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:16px;flex-wrap:wrap}
+        .logo{font-size:26px;font-weight:900;cursor:pointer;color:#fff;text-decoration:none;display:flex;align-items:center;gap:8px;flex-shrink:0;letter-spacing:-1px}
+        .logo span{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:50px;font-size:13px;font-weight:600}
+        .search-box{display:flex;flex:1;max-width:500px;min-width:200px;background:#fff;border-radius:50px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .search-box input{flex:1;border:none;padding:12px 20px;font-size:15px;outline:none;color:var(--text)}
+        .search-box input::placeholder{color:#B0B7C3}
+        .search-box button{background:var(--primary-dark);border:none;color:#fff;padding:12px 24px;cursor:pointer;font-weight:600;font-size:14px;transition:var(--transition)}
+        .search-box button:hover{background:#4317A0}
+        .header-actions{display:flex;gap:12px;align-items:center;flex-shrink:0}
+        .icon-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:20px;position:relative;transition:var(--transition);display:flex;align-items:center;justify-content:center}
+        .icon-btn:hover{background:rgba(255,255,255,.35);transform:scale(1.05)}
+        .badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;border:2px solid var(--primary)}
+        .badge.hidden{display:none}
+        .lang-switch{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.3);color:#fff;padding:8px 16px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;transition:var(--transition);white-space:nowrap}
+        .lang-switch:hover{background:rgba(255,255,255,.35)}
+        .sub-header{background:#fff;padding:10px 24px;display:flex;gap:10px;overflow-x:auto;border-bottom:1px solid var(--border);box-shadow:var(--shadow);scrollbar-width:none}
+        .sub-header::-webkit-scrollbar{display:none}
+        .category-chip{padding:9px 18px;border-radius:50px;background:var(--bg);border:1.5px solid transparent;cursor:pointer;white-space:nowrap;font-size:13px;font-weight:600;transition:var(--transition);color:var(--text)}
+        .category-chip:hover,.category-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .content{max-width:1400px;margin:0 auto;padding:20px 24px}
+        .section{display:none}
+        .section.active{display:block}
+        .section-title{font-size:22px;font-weight:800;margin:24px 0 14px;display:flex;align-items:center;gap:8px}
+        .hero-banner{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:var(--radius);padding:40px 32px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+        .hero-banner::after{content:'';position:absolute;right:-40px;top:-60px;width:300px;height:300px;background:rgba(255,255,255,.08);border-radius:50%}
+        .hero-banner h2{font-size:28px;margin-bottom:8px;position:relative;z-index:1}
+        .hero-banner p{font-size:16px;opacity:.9;margin-bottom:18px;position:relative;z-index:1}
+        .hero-banner .btn-white{background:#fff;color:var(--primary);border:none;padding:12px 28px;border-radius:50px;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition);position:relative;z-index:1}
+        .hero-banner .btn-white:hover{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+        .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+        .product-card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:var(--transition);cursor:pointer;position:relative}
+        .product-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+        .product-image{width:100%;height:220px;background:#F9FAFB;display:flex;align-items:center;justify-content:center;font-size:70px;position:relative;overflow:hidden}
+        .product-image img{width:100%;height:100%;object-fit:cover}
+        .discount-badge{position:absolute;top:10px;left:10px;background:var(--danger);color:#fff;padding:5px 12px;border-radius:50px;font-size:12px;font-weight:800;z-index:2}
+        .favorite-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.9);border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:var(--transition);z-index:2}
+        .favorite-btn:hover{background:#FEE2E2;transform:scale(1.1)}
+        .product-info{padding:12px 14px}
+        .product-name{font-size:13px;font-weight:600;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px;line-height:1.4}
+        .product-brand{font-size:11px;color:var(--text-lighter);margin-bottom:4px}
+        .product-rating{font-size:12px;margin-bottom:4px;color:var(--star)}
+        .price-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .price{font-size:20px;font-weight:800;color:var(--primary)}
+        .old-price{font-size:14px;color:var(--text-lighter);text-decoration:line-through}
+        .add-to-cart-btn{width:100%;margin-top:10px;background:var(--primary);color:#fff;border:none;padding:10px;border-radius:var(--radius-xs);font-weight:700;font-size:13px;cursor:pointer;transition:var(--transition);letter-spacing:.3px}
+        .add-to-cart-btn:hover{background:var(--primary-dark)}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.active{display:flex}
+        .modal{background:#fff;border-radius:var(--radius);width:100%;max-width:900px;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease;position:relative}
+        @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        .modal-close{position:sticky;top:14px;float:right;z-index:10;background:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:24px;cursor:pointer;box-shadow:var(--shadow-md);margin-right:14px;display:flex;align-items:center;justify-content:center}
+        .modal-body{display:flex;gap:24px;padding:20px 24px 24px;flex-wrap:wrap}
+        .modal-gallery{flex:1;min-width:300px}
+        .slider-container{position:relative;width:100%;height:350px;border-radius:var(--radius-sm);overflow:hidden;background:#F9FAFB;margin-bottom:10px}
+        .slider-container img{width:100%;height:100%;object-fit:cover}
+        .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:var(--transition);z-index:2}
+        .slider-btn:hover{background:rgba(0,0,0,.7)}
+        .slider-prev{left:10px}.slider-next{right:10px}
+        .slider-dots{display:flex;justify-content:center;gap:8px}
+        .slider-dot{width:10px;height:10px;border-radius:50%;background:#ccc;cursor:pointer;transition:var(--transition)}
+        .slider-dot.active{background:var(--primary);width:28px;border-radius:10px}
+        .modal-info{flex:1;min-width:280px}
+        .modal-info h2{font-size:22px;margin-bottom:8px}
+        .modal-brand{color:var(--text-light);font-size:14px;margin-bottom:8px}
+        .modal-price-big{font-size:32px;font-weight:900;color:var(--primary);margin-bottom:4px}
+        .modal-old-price-big{font-size:18px;color:var(--text-lighter);text-decoration:line-through;margin-bottom:16px}
+        .modal-desc{color:var(--text-light);font-size:14px;line-height:1.7;margin-bottom:16px}
+        .option-selector{margin-bottom:14px}
+        .option-selector label{font-weight:600;font-size:14px;display:block;margin-bottom:5px}
+        .option-selector select{padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-xs);font-size:14px;width:100%;outline:none;cursor:pointer}
+        .modal-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+        .btn-lg{padding:14px 28px;border-radius:50px;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:var(--transition)}
+        .btn-primary{background:var(--primary);color:#fff}
+        .btn-primary:hover{background:var(--primary-dark)}
+        .btn-outline{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+        .btn-outline:hover{background:var(--primary-light)}
+        .reviews-section{padding:0 24px 24px;border-top:1px solid var(--border);margin-top:20px;padding-top:20px}
+        .reviews-section h3{font-size:18px;margin-bottom:14px}
+        .review-card{background:#F9FAFB;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px}
+        .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+        .review-author{font-weight:700;font-size:14px}
+        .review-date{font-size:11px;color:var(--text-lighter)}
+        .review-stars{color:var(--star);font-size:14px}
+        .review-text{font-size:13px;color:var(--text);line-height:1.6;margin:8px 0}
+        .review-image{max-width:120px;max-height:120px;border-radius:8px;margin-top:6px;cursor:pointer;object-fit:cover}
+        .star-selector{display:flex;gap:4px;cursor:pointer;margin-bottom:10px}
+        .star-selector span{font-size:28px;color:#ddd;transition:.2s}
+        .star-selector span.active{color:var(--star)}
+        .review-form textarea{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-xs);font-size:13px;outline:none;resize:vertical;min-height:70px;font-family:inherit;margin-bottom:8px}
+        .review-form textarea:focus{border-color:var(--primary)}
+        .review-form input[type=file]{margin-bottom:8px}
+        .cart-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);max-width:600px}
+        .cart-item-img{font-size:40px;width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#F9FAFB;border-radius:10px;overflow:hidden}
+        .cart-item-img img{width:100%;height:100%;object-fit:cover}
+        .cart-item-info{flex:1}
+        .cart-item-name{font-weight:600;font-size:14px}
+        .cart-item-options{font-size:12px;color:var(--text-light)}
+        .cart-item-price{font-weight:700;color:var(--primary)}
+        .qty-control{display:flex;align-items:center;gap:8px}
+        .qty-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:#fff;cursor:pointer;font-weight:700;font-size:16px}
+        .total-row{display:flex;justify-content:space-between;font-size:20px;font-weight:900;margin:16px 0;max-width:600px}
+        .checkout-btn{width:100%;max-width:600px;padding:15px;background:var(--success);color:#fff;border:none;border-radius:50px;font-size:17px;font-weight:800;cursor:pointer;transition:var(--transition)}
+        .checkout-btn:hover{background:#238636}
+        .checkout-form input,.checkout-form textarea{width:100%;max-width:600px;padding:12px 16px;margin-bottom:10px;border:2px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:inherit}
+        .auth-container{max-width:450px;margin:20px auto;background:#fff;border-radius:var(--radius);padding:30px;box-shadow:var(--shadow-md)}
+        .auth-container h2{text-align:center;margin-bottom:20px;color:var(--primary)}
+        .auth-tabs{display:flex;gap:0;margin-bottom:20px;background:var(--bg);border-radius:50px;padding:4px}
+        .auth-tab{flex:1;padding:10px;border-radius:50px;border:none;cursor:pointer;font-weight:700;font-size:14px;background:transparent;color:var(--text-light);transition:var(--transition)}
+        .auth-tab.active{background:var(--primary);color:#fff}
+        .form-group{margin-bottom:14px}
+        .form-group label{display:block;font-weight:600;font-size:13px;margin-bottom:5px}
+        .form-group input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-xs);font-size:14px;outline:none;transition:.2s}
+        .form-group input:focus{border-color:var(--primary)}
+        .btn-submit{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:50px;font-weight:700;font-size:15px;cursor:pointer;transition:var(--transition)}
+        .btn-submit:hover{background:var(--primary-dark)}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;align-items:center;height:65px;border-top:1px solid var(--border);box-shadow:0 -2px 12px rgba(0,0,0,.08);z-index:1000}
+        .nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 16px;cursor:pointer;color:var(--text-lighter);font-size:11px;font-weight:600;transition:var(--transition);border:none;background:none;border-radius:10px;position:relative}
+        .nav-item span:first-child{font-size:24px;transition:var(--transition)}
+        .nav-item.active{color:var(--primary)}
+        .nav-item.active span:first-child{transform:scale(1.1)}
+        .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:12px 28px;border-radius:50px;font-weight:700;z-index:9999;opacity:0;transition:.3s;pointer-events:none;font-size:14px;white-space:nowrap}
+        .toast.show{opacity:1;bottom:100px}
+        .footer{background:#1F2937;color:#fff;text-align:center;padding:20px;font-size:12px;margin-top:30px}
+        .footer .currency-info{font-size:14px;font-weight:600;margin:6px 0;color:#FCD34D}
+        @media(max-width:768px){.header-top{padding:10px 14px;gap:10px}.logo{font-size:20px}.search-box{order:3;flex-basis:100%;max-width:100%}.products-grid{grid-template-columns:repeat(2,1fr);gap:8px}.product-image{height:160px;font-size:50px}.product-name{font-size:11px;min-height:28px}.price{font-size:16px}.modal-body{flex-direction:column}.slider-container{height:250px}}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-top">
+            <a class="logo" onclick="navigate('home')">🛍️ M-market<span>TJS</span></a>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Mahsulotlarni qidirish..." oninput="handleSearch()">
+                <button onclick="handleSearch()">Qidirish</button>
+            </div>
+            <div class="header-actions">
+                <button class="lang-switch" onclick="cycleLanguage()" id="langBtn">🇺🇿 O'zbekcha</button>
+                <button class="icon-btn" onclick="navigate('favorites')" title="Saralanganlar">❤️<span class="badge hidden" id="favBadge">0</span></button>
+                <button class="icon-btn" onclick="navigate('cart')" title="Savat">🛒<span class="badge hidden" id="cartBadge">0</span></button>
+                <button class="icon-btn" onclick="navigate('profile')" title="Profil">👤</button>
+            </div>
+        </div>
+    </header>
+    <div class="sub-header" id="categoryFilters"></div>
+    <main class="content">
+        <div class="section active" id="homeSection">
+            <div class="hero-banner"><h2 id="heroTitle">🚀 M-market — eng yaxshi narxlar!</h2><p id="heroDesc">Sifatli mahsulotlar, tez yetkazib berish</p><button class="btn-white" onclick="navigate('catalog')" id="heroBtn">Harid qilish</button></div>
+            <h2 class="section-title" id="popularTitle">🔥 Ommabop mahsulotlar</h2>
+            <div class="products-grid" id="productsContainer"></div>
+        </div>
+        <div class="section" id="catalogSection"><h2 class="section-title">📂 <span id="catalogTitle">Barcha mahsulotlar</span> (<span id="catalogCount">0</span>)</h2><div class="products-grid" id="catalogProducts"></div></div>
+        <div class="section" id="favoritesSection"><h2 class="section-title" id="favTitle">❤️ Saralangan mahsulotlar</h2><div id="favoritesContainer"></div></div>
+        <div class="section" id="cartSection"><h2 class="section-title" id="cartTitle">🛒 Savat</h2><div id="cartContainer"></div><div class="total-row" id="cartTotalRow" style="display:none;"><span id="totalLabel">Jami:</span><span id="cartTotal">0.00 TJS</span></div><div id="checkoutForm" style="display:none;margin-top:16px;"><h3 id="checkoutTitle">Buyurtmani rasmiylashtirish</h3><p style="color:var(--text-light);font-size:13px;margin-bottom:10px;" id="checkoutNote">To'lov: <strong>faqat naqd pul</strong></p><input type="text" id="orderName" placeholder="Ismingiz" class="checkout-form" required><input type="tel" id="orderPhone" placeholder="Telefon raqamingiz" class="checkout-form" required><textarea id="orderAddress" rows="2" placeholder="Yetkazib berish manzili" class="checkout-form"></textarea><button class="checkout-btn" onclick="placeOrder()" id="checkoutBtn">✅ Buyurtmani tasdiqlash</button></div></div>
+        <div class="section" id="profileSection"><h2 class="section-title">👤 Profil</h2><div id="profileContent"></div></div>
+    </main>
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-nav="home" onclick="navigate('home')"><span>🏠</span><span id="navHome">Bosh</span></button>
+        <button class="nav-item" data-nav="catalog" onclick="navigate('catalog')"><span>📂</span><span id="navCatalog">Katalog</span></button>
+        <button class="nav-item" data-nav="favorites" onclick="navigate('favorites')"><span>❤️</span><span id="navFav">Saralangan</span><span class="badge hidden" id="navFavBadge">0</span></button>
+        <button class="nav-item" data-nav="cart" onclick="navigate('cart')"><span>🛒</span><span id="navCart">Savat</span><span class="badge hidden" id="navCartBadge">0</span></button>
+        <button class="nav-item" data-nav="profile" onclick="navigate('profile')"><span>👤</span><span id="navProfile">Profil</span></button>
+    </nav>
+    <div class="modal-overlay" id="productModal"><div class="modal"><button class="modal-close" onclick="closeProductModal()">✕</button><div class="modal-body" id="modalBody"></div><div class="reviews-section" id="reviewsSection"></div></div></div>
+    <div class="toast" id="toast"></div>
+    <footer class="footer"><p>© 2026 M-market. Barcha huquqlar himoyalangan.</p><p class="currency-info">💱 Barcha narxlar <strong>Tojik Somoniysida (TJS)</strong> ko'rsatilgan</p><p>📞 +992 55 44 100 50 | 📧 bekturayv@gmail.com</p></footer>
+
+<script>
+const API_URL = '/api';
+let token = localStorage.getItem('mMarketToken') || '';
+let currentUser = JSON.parse(localStorage.getItem('mMarketUser')) || null;
+let currentLanguage = localStorage.getItem('mMarketLang') || 'uz';
+let activeCategory = 'all';
+let currentSection = 'home';
+let products = [];
+let cart = JSON.parse(localStorage.getItem('mMarketCart')) || [];
+let favorites = JSON.parse(localStorage.getItem('mMarketFavorites')) || [];
+let productReviews = JSON.parse(localStorage.getItem('mMarketReviews')) || {};
+let reviewRating = 0;
+
+const translations = {
+    uz:{heroTitle:'🚀 M-market — eng yaxshi narxlar!',heroDesc:'Sifatli mahsulotlar, tez yetkazib berish',heroBtn:'Harid qilish',popularTitle:'🔥 Ommabop mahsulotlar',catalogTitle:'Barcha mahsulotlar',favTitle:'❤️ Saralangan mahsulotlar',cartTitle:'🛒 Savat',totalLabel:'Jami:',checkoutTitle:'Buyurtmani rasmiylashtirish',checkoutNote:'To\'lov: <strong>faqat naqd pul</strong> (yetkazib berilganda)',checkoutBtn:'✅ Buyurtmani tasdiqlash',navHome:'Bosh',navCatalog:'Katalog',navFav:'Saralangan',navCart:'Savat',navProfile:'Profil',cartEmpty:'Savat bo\'sh 🛒',favEmpty:'Saralangan mahsulotlar yo\'q 🤍',orderSuccess:'Buyurtmangiz qabul qilindi! 🎉',addedCart:'Savatga qo\'shildi! ✅',removedCart:'Savatdan olindi! ❌',addedFav:'Saralanganlarga qo\'shildi! ❤️',removedFav:'Saralanganlardan olindi! 💔',reviewAdded:'Fikringiz qabul qilindi! ⭐',searchPlaceholder:'🔍 Mahsulotlarni qidirish...',allCategories:'🏠 Barchasi',loginTitle:'Tizimga kirish',registerTitle:'Ro\'yxatdan o\'tish',loginBtn:'Kirish',registerBtn:'Ro\'yxatdan o\'tish',logoutBtn:'Chiqish',reviewTitle:'💬 Fikrlar',noReviews:'Hali fikrlar yo\'q. Birinchi bo\'lib fikr qoldiring!',writeReview:'Fikringizni yozing...',submitReview:'📤 Yuborish',selectStar:'Yulduzcha bosing'},
+    tj:{heroTitle:'🚀 M-market — нархҳои беҳтарин!',heroDesc:'Маҳсулоти сифатнок, расонидани зуд',heroBtn:'Харид кардан',popularTitle:'🔥 Маҳсулоти машҳур',catalogTitle:'Ҳамаи маҳсулотҳо',favTitle:'❤️ Маҳсулоти интихобшуда',cartTitle:'🛒 Сабад',totalLabel:'Ҳамагӣ:',checkoutTitle:'Расмиёти фармоиш',checkoutNote:'<strong>Танҳо нақд</strong> (ҳангоми расонидан)',checkoutBtn:'✅ Фармоишро тасдиқ кунед',navHome:'Асосӣ',navCatalog:'Каталог',navFav:'Интихобшуда',navCart:'Сабад',navProfile:'Профил',cartEmpty:'Сабад холӣ 🛒',favEmpty:'Маҳсулоти интихобшуда нест 🤍',orderSuccess:'Фармоиши шумо қабул шуд! 🎉',addedCart:'Ба сабад илова шуд! ✅',removedCart:'Аз сабад хориҷ шуд! ❌',addedFav:'Ба интихобшуда илова шуд! ❤️',removedFav:'Аз интихобшуда хориҷ шуд! 💔',reviewAdded:'Фикри шумо қабул шуд! ⭐',searchPlaceholder:'🔍 Ҷустуҷӯи маҳсулот...',allCategories:'🏠 Ҳама',loginTitle:'Воридшавӣ',registerTitle:'Сабти ном',loginBtn:'Ворид',registerBtn:'Сабти ном',logoutBtn:'Баромад',reviewTitle:'💬 Фикрҳо',noReviews:'Ҳанӯз фикрҳо нест. Аввалин шуда фикр гузоред!',writeReview:'Фикри худро нависед...',submitReview:'📤 Ирсол',selectStar:'Ситораро клик кунед'},
+    ru:{heroTitle:'🚀 M-market — лучшие цены!',heroDesc:'Качественные товары, быстрая доставка',heroBtn:'Купить',popularTitle:'🔥 Популярные товары',catalogTitle:'Все товары',favTitle:'❤️ Избранные товары',cartTitle:'🛒 Корзина',totalLabel:'Итого:',checkoutTitle:'Оформление заказа',checkoutNote:'<strong>Только наличные</strong> (при доставке)',checkoutBtn:'✅ Подтвердить заказ',navHome:'Главная',navCatalog:'Каталог',navFav:'Избранное',navCart:'Корзина',navProfile:'Профиль',cartEmpty:'Корзина пуста 🛒',favEmpty:'Избранных товаров нет 🤍',orderSuccess:'Ваш заказ принят! 🎉',addedCart:'Добавлено в корзину! ✅',removedCart:'Удалено из корзины! ❌',addedFav:'Добавлено в избранное! ❤️',removedFav:'Удалено из избранного! 💔',reviewAdded:'Ваш отзыв принят! ⭐',searchPlaceholder:'🔍 Поиск товаров...',allCategories:'🏠 Все',loginTitle:'Вход',registerTitle:'Регистрация',loginBtn:'Войти',registerBtn:'Регистрация',logoutBtn:'Выйти',reviewTitle:'💬 Отзывы',noReviews:'Пока нет отзывов. Оставьте первый!',writeReview:'Напишите свой отзыв...',submitReview:'📤 Отправить',selectStar:'Нажмите на звезду'}
+};
+function t(key){return translations[currentLanguage]?.[key]||key}
+
+const categoryList = [
+    {id:'all',name_uz:'🏠 Barchasi',name_tj:'🏠 Ҳама',name_ru:'🏠 Все'},
+    {id:'koylak',name_uz:"👗 Qizlar ko'ylagi",name_tj:'👗 Куртаи духтар',name_ru:'👗 Платья'},
+    {id:'bossonojka',name_uz:'👡 Ayollar bossonojkasi',name_tj:'👡 Пойафзоли занона',name_ru:'👡 Босоножки'},
+    {id:'soat',name_uz:'⌚ Soatlar',name_tj:'⌚ Соат',name_ru:'⌚ Часы'},
+    {id:'uzuk',name_uz:'💍 Uzuklar',name_tj:'💍 Ангуштарин',name_ru:'💍 Кольца'},
+    {id:'braslet',name_uz:'💫 Brasletlar',name_tj:'💫 Дастпона',name_ru:'💫 Браслеты'},
+    {id:'electronika',name_uz:'📱 Elektronika',name_tj:'📱 Электроника',name_ru:'📱 Электроника'},
+    {id:'oshxona',name_uz:'🍳 Oshxona buyumlari',name_tj:'🍳 Асбоби ошхона',name_ru:'🍳 Кухонные товары'},
+    {id:'televizor',name_uz:'📺 Televizorlar',name_tj:'📺 Телевизор',name_ru:'📺 Телевизоры'},
+    {id:'oziqOvqat',name_uz:'🍞 Oziq-ovqat',name_tj:'🍞 Хӯрокворӣ',name_ru:'🍞 Продукты'},
+    {id:'erkakShim',name_uz:'👖 Erkaklar shimi',name_tj:'👖 Шими мардона',name_ru:'👖 Мужские брюки'},
+    {id:'futbolka',name_uz:'👕 Futbolkalar',name_tj:'👕 Футболка',name_ru:'👕 Футболки'},
+];
+
+function authHeaders(){const h={'Content-Type':'application/json'};if(token)h['Authorization']=`Bearer ${token}`;return h}
+function saveReviews(){localStorage.setItem('mMarketReviews',JSON.stringify(productReviews))}
+
+async function loadProducts(){
+    try{const res=await fetch(`${API_URL}/products`);if(res.ok){const data=await res.json();products=data.data||data;}}catch(e){console.error(e)}
+    renderHome();
+}
+
+function saveCart(){localStorage.setItem('mMarketCart',JSON.stringify(cart));updateBadges()}
+function saveFav(){localStorage.setItem('mMarketFavorites',JSON.stringify(favorites));updateBadges()}
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000)}
+function updateBadges(){const cc=cart.reduce((s,i)=>s+i.quantity,0);['cartBadge','favBadge','navCartBadge','navFavBadge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=id.includes('Cart')?cc:favorites.length;(id.includes('Cart')?cc>0:favorites.length>0)?el.classList.remove('hidden'):el.classList.add('hidden')}})}
+function navigate(section){currentSection=section;document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));const map={home:'homeSection',catalog:'catalogSection',favorites:'favoritesSection',cart:'cartSection',profile:'profileSection'};if(map[section])document.getElementById(map[section]).classList.add('active');document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));const ni=document.querySelector(`.nav-item[data-nav="${section}"]`);if(ni)ni.classList.add('active');if(section==='home')renderHome();else if(section==='catalog')renderCatalog();else if(section==='favorites')renderFavorites();else if(section==='cart')renderCart();else if(section==='profile')renderProfile();window.scrollTo(0,0)}
+function handleSearch(){navigate('catalog')}
+function filterByCategory(cat,btn){activeCategory=cat;document.querySelectorAll('.category-chip').forEach(c=>c.classList.remove('active'));if(btn)btn.classList.add('active');navigate('catalog')}
+function getFiltered(){let f=products;if(activeCategory!=='all')f=f.filter(p=>p.category===activeCategory);const query=document.getElementById('searchInput')?.value?.toLowerCase().trim();if(query)f=f.filter(p=>p.name.toLowerCase().includes(query));return f}
+function renderImage(img){if(!img)return'📦';if(img.startsWith('data:image')||img.startsWith('http'))return`<img src="${img}" alt="rasm">`;return img}
+function getStars(r){const f=Math.floor(r),h=r-f>=0.5;let s='';for(let i=0;i<5;i++)s+=i<f?'⭐':(i===f&&h?'✨':'☆');return s}
+function getStarsHTML(r){const f=Math.floor(r),h=r-f>=0.5;let s='';for(let i=0;i<5;i++)s+=i<f?'★':(i===f&&h?'⯪':'☆');return s}
+function cardHTML(p){const inCart=cart.some(i=>i.id===p._id||i.id===p.id);const firstImg=(p.images&&p.images.length>0)?p.images[0]:'📦';const pid=p._id||p.id;return`<div class="product-card"><div class="product-image" onclick="openProductModal('${pid}')">${renderImage(firstImg)}${p.discount>0?`<span class="discount-badge">-${p.discount}%</span>`:''}</div><button class="favorite-btn" onclick="event.stopPropagation();toggleFavorite('${pid}')">${favorites.includes(pid)?'❤️':'🤍'}</button><div class="product-info" onclick="openProductModal('${pid}')"><div class="product-brand">${p.brand||''}</div><div class="product-name">${p.name}</div><div class="product-rating">${getStars(p.rating)} ${p.rating}</div><div class="price-row"><span class="price">${p.price.toFixed(2)} TJS</span>${p.oldPrice?`<span class="old-price">${p.oldPrice.toFixed(2)} TJS</span>`:''}</div></div><button class="add-to-cart-btn" onclick="event.stopPropagation();openProductModal('${pid}')">${inCart?'✅ Savatda':'🛒 Savatga'}</button></div>`}
+function renderHome(){const popular=[...products].sort(()=>0.5-Math.random()).slice(0,8);document.getElementById('productsContainer').innerHTML=popular.map(p=>cardHTML(p)).join('')}
+function renderCatalog(){const filtered=getFiltered();document.getElementById('catalogCount').textContent=filtered.length;document.getElementById('catalogProducts').innerHTML=filtered.length?filtered.map(p=>cardHTML(p)).join(''):'<p style="text-align:center;padding:40px;">😕 Mahsulot topilmadi</p>'}
+function renderFavorites(){const fp=products.filter(p=>favorites.includes(p._id||p.id));document.getElementById('favoritesContainer').innerHTML=fp.length?`<div class="products-grid">${fp.map(p=>cardHTML(p)).join('')}</div>`:`<p style="text-align:center;padding:40px;">${t('favEmpty')}</p>`}
+function addToCart(pid,color,size){const existing=cart.find(i=>(i._id||i.id)===pid&&i.color===color&&i.size===size);if(existing)existing.quantity+=1;else{const p=products.find(x=>(x._id||x.id)===pid);if(!p)return;cart.push({...p,quantity:1,color,size,_id:pid,id:pid})}saveCart();showToast(t('addedCart'))}
+function renderCart(){const container=document.getElementById('cartContainer'),totalRow=document.getElementById('cartTotalRow'),checkoutForm=document.getElementById('checkoutForm');if(cart.length===0){container.innerHTML=`<p style="text-align:center;padding:40px;">${t('cartEmpty')}</p>`;totalRow.style.display='none';checkoutForm.style.display='none';return}totalRow.style.display='flex';checkoutForm.style.display='block';let total=0;container.innerHTML=cart.map((item,idx)=>{const itemTotal=item.price*item.quantity;total+=itemTotal;const img=(item.images&&item.images[0])||'📦';return`<div class="cart-item"><div class="cart-item-img">${renderImage(img)}</div><div class="cart-item-info"><div class="cart-item-name">${item.name}</div><div class="cart-item-options">${item.color||''} ${item.size||''}</div><div class="cart-item-price">${itemTotal.toFixed(2)} TJS</div></div><div class="qty-control"><button class="qty-btn" onclick="changeQty(${idx},-1)">−</button><span>${item.quantity}</span><button class="qty-btn" onclick="changeQty(${idx},1)">+</button></div><button onclick="removeFromCart(${idx})" style="background:none;border:none;cursor:pointer;font-size:18px;">🗑️</button></div>`}).join('');document.getElementById('cartTotal').textContent=`${total.toFixed(2)} TJS`}
+function changeQty(idx,delta){cart[idx].quantity+=delta;if(cart[idx].quantity<=0)cart.splice(idx,1);saveCart();renderCart()}
+function removeFromCart(idx){cart.splice(idx,1);saveCart();renderCart();showToast(t('removedCart'))}
+async function placeOrder(){const name=document.getElementById('orderName').value.trim(),phone=document.getElementById('orderPhone').value.trim(),address=document.getElementById('orderAddress').value.trim();if(!name||!phone)return alert('Ismingiz va telefon raqamingizni kiriting!');if(cart.length===0)return alert('Savatingiz bo\'sh!');const orderData={customer:{name,phone,address},items:cart.map(i=>({name:i.name,color:i.color||'',size:i.size||'',quantity:i.quantity,price:i.price})),total:cart.reduce((s,i)=>s+i.price*i.quantity,0)};try{const res=await fetch(`${API_URL}/orders`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderData)});if(res.ok){cart=[];saveCart();document.getElementById('orderName').value='';document.getElementById('orderPhone').value='';document.getElementById('orderAddress').value='';showToast(t('orderSuccess'));navigate('cart')}else{const err=await res.json();alert(err.message||'Xatolik')}}catch(e){alert('Serverga ulanib bo\'lmadi')}}
+function toggleFavorite(pid){if(favorites.includes(pid)){favorites=favorites.filter(id=>id!==pid);showToast(t('removedFav'))}else{favorites.push(pid);showToast(t('addedFav'))}saveFav();if(currentSection==='home')renderHome();if(currentSection==='catalog')renderCatalog();if(currentSection==='favorites')renderFavorites()}
+function openProductModal(pid){const p=products.find(x=>(x._id||x.id)===pid);if(!p)return;const allImages=(p.images&&p.images.length>0)?p.images:['📦'];window._modalImages=allImages;window._currentSlide=0;document.getElementById('modalBody').innerHTML=`<div class="modal-gallery"><div class="slider-container" id="modalSlider">${renderImage(allImages[0])}${allImages.length>1?`<button class="slider-btn slider-prev" onclick="changeSlide(-1)">‹</button><button class="slider-btn slider-next" onclick="changeSlide(1)">›</button>`:''}</div>${allImages.length>1?`<div class="slider-dots">${allImages.map((_,i)=>`<span class="slider-dot${i===0?' active':''}" onclick="goToSlide(${i})"></span>`).join('')}</div>`:''}</div><div class="modal-info"><div class="modal-brand">${p.brand||''}</div><h2>${p.name}</h2><div class="modal-price-big">${p.price.toFixed(2)} TJS</div>${p.oldPrice?`<div class="modal-old-price-big">${p.oldPrice.toFixed(2)} TJS</div>`:''}${p.discount>0?`<span style="background:var(--danger);color:white;padding:4px 12px;border-radius:50px;font-weight:700;">-${p.discount}%</span>`:''}<p class="modal-desc">${p.desc||''}</p>${p.colors?.length?`<div class="option-selector"><label>Rangi:</label><select id="colorSelect">${p.colors.map(c=>`<option>${c}</option>`).join('')}</select></div>`:''}${p.sizes?.length?`<div class="option-selector"><label>Razmer:</label><select id="sizeSelect">${p.sizes.map(s=>`<option>${s}</option>`).join('')}</select></div>`:''}<div class="modal-actions"><button class="btn-lg btn-primary" onclick="addToCartFromModal('${pid}')">🛒 Savatga qo'shish</button><button class="btn-lg btn-outline" onclick="toggleFavoriteFromModal('${pid}')">${favorites.includes(pid)?'❤️':'🤍'} Saralangan</button></div></div>`;renderReviews(pid);document.getElementById('productModal').classList.add('active');document.body.style.overflow='hidden'}
+function changeSlide(dir){const imgs=window._modalImages||[];if(imgs.length<=1)return;window._currentSlide=(window._currentSlide+dir+imgs.length)%imgs.length;updateSliderView()}
+function goToSlide(idx){window._currentSlide=idx;updateSliderView()}
+function updateSliderView(){const imgs=window._modalImages||[];const container=document.getElementById('modalSlider');if(!container)return;container.innerHTML=`${renderImage(imgs[window._currentSlide])}${imgs.length>1?`<button class="slider-btn slider-prev" onclick="changeSlide(-1)">‹</button><button class="slider-btn slider-next" onclick="changeSlide(1)">›</button>`:''}`;document.querySelectorAll('.slider-dot').forEach((d,i)=>d.classList.toggle('active',i===window._currentSlide))}
+function closeProductModal(){document.getElementById('productModal').classList.remove('active');document.body.style.overflow=''}
+function addToCartFromModal(pid){const color=document.getElementById('colorSelect')?.value||'';const size=document.getElementById('sizeSelect')?.value||'';addToCart(pid,color,size);closeProductModal()}
+function toggleFavoriteFromModal(pid){toggleFavorite(pid);openProductModal(pid)}
+
+// ========== OTZIV (REVIEWS) ==========
+function renderReviews(pid){
+    const reviews = productReviews[pid] || [];
+    let html = `<h3>${t('reviewTitle')} (${reviews.length})</h3>`;
+    if(reviews.length === 0){
+        html += `<p style="color:var(--text-lighter);margin-bottom:16px;">${t('noReviews')}</p>`;
+    } else {
+        reviews.forEach(r => {
+            html += `<div class="review-card">
+                <div class="review-header"><span class="review-author">${r.author}</span><span class="review-date">${new Date(r.date).toLocaleString()}</span></div>
+                <div class="review-stars">${getStarsHTML(r.stars)}</div>
+                <div class="review-text">${r.text}</div>
+                ${r.image ? `<img src="${r.image}" class="review-image" onclick="window.open(this.src)">` : ''}
+            </div>`;
+        });
+    }
+    html += `<div class="review-form">
+        <div class="star-selector" id="starSelector">
+            ${[1,2,3,4,5].map(i => `<span onclick="setReviewRating(${i})">☆</span>`).join('')}
+        </div>
+        <small style="color:var(--text-lighter);display:block;margin-bottom:6px;">${t('selectStar')}</small>
+        <textarea id="reviewText" placeholder="${t('writeReview')}"></textarea>
+        <input type="file" id="reviewImageInput" accept="image/*" style="display:block;font-size:12px;">
+        <button class="btn-lg btn-primary" onclick="submitReview('${pid}')" style="margin-top:8px;">${t('submitReview')}</button>
+    </div>`;
+    document.getElementById('reviewsSection').innerHTML = html;
+    reviewRating = 0;
+}
+function setReviewRating(val){
+    reviewRating = val;
+    const stars = document.querySelectorAll('#starSelector span');
+    stars.forEach((s, i) => {
+        s.textContent = i < val ? '★' : '☆';
+        s.classList.toggle('active', i < val);
+    });
+}
+function submitReview(pid){
+    const text = document.getElementById('reviewText')?.value.trim();
+    if(!text) return alert('Fikr matnini yozing!');
+    if(reviewRating === 0) return alert('Yulduzcha baho bering!');
+    const author = currentUser?.name || 'Anonim';
+    const fileInput = document.getElementById('reviewImageInput');
+    const saveReviewFn = (imageData) => {
+        if(!productReviews[pid]) productReviews[pid] = [];
+        productReviews[pid].push({ author, text, stars: reviewRating, date: new Date().toISOString(), image: imageData || null });
+        saveReviews();
+        showToast(t('reviewAdded'));
+        openProductModal(pid);
+    };
+    if(fileInput && fileInput.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(e){ saveReviewFn(e.target.result); };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        saveReviewFn(null);
+    }
+}
+
+function renderProfile(){
+    const c=document.getElementById('profileContent');
+    if(currentUser){c.innerHTML=`<div style="max-width:500px;margin:0 auto;text-align:center;"><div style="font-size:80px;">👤</div><h2>${currentUser.name}</h2><p>📧 ${currentUser.email}</p><button class="btn-submit" style="background:var(--danger);margin-top:16px;max-width:300px;" onclick="logout()">🚪 ${t('logoutBtn')}</button></div>`}
+    else{c.innerHTML=`<div class="auth-container"><h2 id="authTitle">${t('loginTitle')}</h2><div class="auth-tabs"><button class="auth-tab active" onclick="switchAuth('login')">${t('loginBtn')}</button><button class="auth-tab" onclick="switchAuth('register')">${t('registerBtn')}</button></div><form onsubmit="handleAuth(event)"><div class="form-group" id="nameGroup" style="display:none"><label>Ism</label><input type="text" id="authName"></div><div class="form-group"><label>Email</label><input type="email" id="authEmail" required></div><div class="form-group" id="phoneGroup" style="display:none"><label>Telefon</label><input type="tel" id="authPhone"></div><div class="form-group"><label>Parol</label><input type="password" id="authPass" required minlength="4"></div><button type="submit" class="btn-submit" id="authBtn">${t('loginBtn')}</button></form></div>`;switchAuth('login')}
+}
+let authMode='login';
+function switchAuth(m){authMode=m;document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.auth-tab:${m==='login'?'first':'last'}-child`).classList.add('active');document.getElementById('authTitle').textContent=m==='login'?t('loginTitle'):t('registerTitle');document.getElementById('authBtn').textContent=m==='login'?t('loginBtn'):t('registerBtn');document.getElementById('nameGroup').style.display=m==='register'?'block':'none';document.getElementById('phoneGroup').style.display=m==='register'?'block':'none'}
+async function handleAuth(e){e.preventDefault();const email=document.getElementById('authEmail').value.trim(),password=document.getElementById('authPass').value.trim();const url=authMode==='register'?'/auth/register':'/auth/login';const body={email,password};if(authMode==='register'){body.name=document.getElementById('authName').value.trim()||'Foydalanuvchi';body.phone=document.getElementById('authPhone').value.trim()||'+992'}try{const res=await fetch(`${API_URL}${url}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(res.ok){token=data.token;localStorage.setItem('mMarketToken',token);currentUser=data.user;localStorage.setItem('mMarketUser',JSON.stringify(currentUser));showToast(authMode==='register'?'Ro\'yxatdan o\'tdingiz!':'Xush kelibsiz!');renderProfile()}else{alert(data.message||'Xatolik')}}catch(e){alert('Serverga ulanib bo\'lmadi')}}
+function logout(){token='';localStorage.removeItem('mMarketToken');currentUser=null;localStorage.removeItem('mMarketUser');showToast('Chiqdingiz');renderProfile()}
+function cycleLanguage(){const langs=['uz','tj','ru'];currentLanguage=langs[(langs.indexOf(currentLanguage)+1)%3];localStorage.setItem('mMarketLang',currentLanguage);applyLanguage()}
+function applyLanguage(){document.getElementById('langBtn').textContent=currentLanguage==='uz'?"🇺🇿 O'zbekcha":currentLanguage==='tj'?'🇹🇯 Тоҷикӣ':'🇷🇺 Русский';['heroTitle','heroDesc','heroBtn','popularTitle','catalogTitle','favTitle','cartTitle','totalLabel','checkoutTitle','checkoutNote','checkoutBtn','navHome','navCatalog','navFav','navCart','navProfile'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=t(id)});document.getElementById('searchInput').placeholder=t('searchPlaceholder');renderCategoryFilters();if(currentSection==='profile')renderProfile()}
+function renderCategoryFilters(){document.getElementById('categoryFilters').innerHTML=categoryList.map(c=>`<button class="category-chip${activeCategory===c.id?' active':''}" onclick="filterByCategory('${c.id}',this)">${c['name_'+currentLanguage]}</button>`).join('')}
+
+document.getElementById('productModal').addEventListener('click',function(e){if(e.target===this)closeProductModal()});
+document.getElementById('searchInput').addEventListener('keypress',function(e){if(e.key==='Enter')handleSearch()});
+window.addEventListener('load',async()=>{applyLanguage();updateBadges();await loadProducts();if(token){try{const res=await fetch(`${API_URL}/auth/profile`,{headers:authHeaders()});if(res.ok){const data=await res.json();currentUser=data.data||data.user;localStorage.setItem('mMarketUser',JSON.stringify(currentUser))}else{logout()}}catch(e){}}renderProfile()});
+</script>
+</body>
+</html>
